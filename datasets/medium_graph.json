@@ -1,0 +1,497 @@
+{
+  "directed": false,
+  "nodes": [
+    {
+      "node_id": "Depot",
+      "name": "Central Distribution Depot",
+      "x": 50.0,
+      "y": 50.0,
+      "is_depot": true
+    },
+    {
+      "node_id": "C1",
+      "name": "Customer Location 1",
+      "x": 9.71,
+      "y": 12.85,
+      "is_depot": false
+    },
+    {
+      "node_id": "C2",
+      "name": "Customer Location 2",
+      "x": 41.65,
+      "y": 14.69,
+      "is_depot": false
+    },
+    {
+      "node_id": "C3",
+      "name": "Customer Location 3",
+      "x": 86.11,
+      "y": 8.43,
+      "is_depot": false
+    },
+    {
+      "node_id": "C4",
+      "name": "Customer Location 4",
+      "x": 53.26,
+      "y": 34.9,
+      "is_depot": false
+    },
+    {
+      "node_id": "C5",
+      "name": "Customer Location 5",
+      "x": 81.69,
+      "y": 19.37,
+      "is_depot": false
+    },
+    {
+      "node_id": "C6",
+      "name": "Customer Location 6",
+      "x": 35.35,
+      "y": 35.04,
+      "is_depot": false
+    },
+    {
+      "node_id": "C7",
+      "name": "Customer Location 7",
+      "x": 27.06,
+      "y": 5.15,
+      "is_depot": false
+    },
+    {
+      "node_id": "C8",
+      "name": "Customer Location 8",
+      "x": 44.26,
+      "y": 12.89,
+      "is_depot": false
+    },
+    {
+      "node_id": "C9",
+      "name": "Customer Location 9",
+      "x": 58.78,
+      "y": 11.29,
+      "is_depot": false
+    },
+    {
+      "node_id": "C10",
+      "name": "Customer Location 10",
+      "x": 33.39,
+      "y": 45.35,
+      "is_depot": false
+    },
+    {
+      "node_id": "C11",
+      "name": "Customer Location 11",
+      "x": 86.49,
+      "y": 13.35,
+      "is_depot": false
+    },
+    {
+      "node_id": "C12",
+      "name": "Customer Location 12",
+      "x": 17.8,
+      "y": 76.11,
+      "is_depot": false
+    },
+    {
+      "node_id": "C13",
+      "name": "Customer Location 13",
+      "x": 6.91,
+      "y": 87.0,
+      "is_depot": false
+    },
+    {
+      "node_id": "C14",
+      "name": "Customer Location 14",
+      "x": 56.61,
+      "y": 28.88,
+      "is_depot": false
+    },
+    {
+      "node_id": "C15",
+      "name": "Customer Location 15",
+      "x": 80.41,
+      "y": 74.19,
+      "is_depot": false
+    },
+    {
+      "node_id": "C16",
+      "name": "Customer Location 16",
+      "x": 35.91,
+      "y": 77.13,
+      "is_depot": false
+    },
+    {
+      "node_id": "C17",
+      "name": "Customer Location 17",
+      "x": 23.62,
+      "y": 59.8,
+      "is_depot": false
+    },
+    {
+      "node_id": "C18",
+      "name": "Customer Location 18",
+      "x": 52.44,
+      "y": 77.84,
+      "is_depot": false
+    },
+    {
+      "node_id": "C19",
+      "name": "Customer Location 19",
+      "x": 33.37,
+      "y": 40.84,
+      "is_depot": false
+    },
+    {
+      "node_id": "C20",
+      "name": "Customer Location 20",
+      "x": 74.24,
+      "y": 51.15,
+      "is_depot": false
+    },
+    {
+      "node_id": "C21",
+      "name": "Customer Location 21",
+      "x": 66.64,
+      "y": 62.45,
+      "is_depot": false
+    },
+    {
+      "node_id": "C22",
+      "name": "Customer Location 22",
+      "x": 65.0,
+      "y": 85.11,
+      "is_depot": false
+    },
+    {
+      "node_id": "C23",
+      "name": "Customer Location 23",
+      "x": 48.75,
+      "y": 65.16,
+      "is_depot": false
+    },
+    {
+      "node_id": "C24",
+      "name": "Customer Location 24",
+      "x": 38.71,
+      "y": 7.87,
+      "is_depot": false
+    }
+  ],
+  "edges": [
+    {
+      "source": "Depot",
+      "target": "C23",
+      "weight": 15.21
+    },
+    {
+      "source": "Depot",
+      "target": "C4",
+      "weight": 15.45
+    },
+    {
+      "source": "Depot",
+      "target": "C10",
+      "weight": 17.25
+    },
+    {
+      "source": "Depot",
+      "target": "C19",
+      "weight": 18.99
+    },
+    {
+      "source": "Depot",
+      "target": "C21",
+      "weight": 20.78
+    },
+    {
+      "source": "Depot",
+      "target": "C6",
+      "weight": 20.94
+    },
+    {
+      "source": "Depot",
+      "target": "C20",
+      "weight": 24.27
+    },
+    {
+      "source": "C1",
+      "target": "C7",
+      "weight": 18.98
+    },
+    {
+      "source": "C1",
+      "target": "C24",
+      "weight": 29.42
+    },
+    {
+      "source": "C1",
+      "target": "C2",
+      "weight": 31.99
+    },
+    {
+      "source": "C2",
+      "target": "C8",
+      "weight": 3.17
+    },
+    {
+      "source": "C2",
+      "target": "C24",
+      "weight": 7.43
+    },
+    {
+      "source": "C2",
+      "target": "C7",
+      "weight": 17.43
+    },
+    {
+      "source": "C2",
+      "target": "C9",
+      "weight": 17.46
+    },
+    {
+      "source": "C2",
+      "target": "C14",
+      "weight": 20.62
+    },
+    {
+      "source": "C3",
+      "target": "C11",
+      "weight": 4.93
+    },
+    {
+      "source": "C3",
+      "target": "C5",
+      "weight": 11.8
+    },
+    {
+      "source": "C3",
+      "target": "C9",
+      "weight": 27.48
+    },
+    {
+      "source": "C4",
+      "target": "C14",
+      "weight": 6.89
+    },
+    {
+      "source": "C4",
+      "target": "C6",
+      "weight": 17.91
+    },
+    {
+      "source": "C4",
+      "target": "C19",
+      "weight": 20.76
+    },
+    {
+      "source": "C4",
+      "target": "C5",
+      "weight": 32.4
+    },
+    {
+      "source": "C4",
+      "target": "C10",
+      "weight": 22.45
+    },
+    {
+      "source": "C4",
+      "target": "C20",
+      "weight": 26.54
+    },
+    {
+      "source": "C5",
+      "target": "C11",
+      "weight": 7.7
+    },
+    {
+      "source": "C5",
+      "target": "C9",
+      "weight": 24.29
+    },
+    {
+      "source": "C5",
+      "target": "C14",
+      "weight": 26.82
+    },
+    {
+      "source": "C6",
+      "target": "C19",
+      "weight": 6.13
+    },
+    {
+      "source": "C6",
+      "target": "C10",
+      "weight": 10.49
+    },
+    {
+      "source": "C7",
+      "target": "C24",
+      "weight": 11.96
+    },
+    {
+      "source": "C7",
+      "target": "C8",
+      "weight": 18.86
+    },
+    {
+      "source": "C8",
+      "target": "C24",
+      "weight": 7.48
+    },
+    {
+      "source": "C8",
+      "target": "C9",
+      "weight": 14.61
+    },
+    {
+      "source": "C8",
+      "target": "C14",
+      "weight": 20.2
+    },
+    {
+      "source": "C9",
+      "target": "C14",
+      "weight": 17.72
+    },
+    {
+      "source": "C9",
+      "target": "C24",
+      "weight": 20.36
+    },
+    {
+      "source": "C9",
+      "target": "C11",
+      "weight": 27.79
+    },
+    {
+      "source": "C10",
+      "target": "C19",
+      "weight": 4.51
+    },
+    {
+      "source": "C10",
+      "target": "C17",
+      "weight": 17.44
+    },
+    {
+      "source": "C11",
+      "target": "C14",
+      "weight": 33.67
+    },
+    {
+      "source": "C12",
+      "target": "C13",
+      "weight": 15.4
+    },
+    {
+      "source": "C12",
+      "target": "C17",
+      "weight": 17.32
+    },
+    {
+      "source": "C12",
+      "target": "C16",
+      "weight": 18.14
+    },
+    {
+      "source": "C13",
+      "target": "C16",
+      "weight": 30.63
+    },
+    {
+      "source": "C13",
+      "target": "C17",
+      "weight": 31.92
+    },
+    {
+      "source": "C13",
+      "target": "C18",
+      "weight": 46.44
+    },
+    {
+      "source": "C13",
+      "target": "C23",
+      "weight": 47.2
+    },
+    {
+      "source": "C14",
+      "target": "C20",
+      "weight": 28.4
+    },
+    {
+      "source": "C15",
+      "target": "C21",
+      "weight": 18.1
+    },
+    {
+      "source": "C15",
+      "target": "C22",
+      "weight": 18.89
+    },
+    {
+      "source": "C15",
+      "target": "C20",
+      "weight": 23.85
+    },
+    {
+      "source": "C15",
+      "target": "C18",
+      "weight": 28.21
+    },
+    {
+      "source": "C16",
+      "target": "C18",
+      "weight": 16.55
+    },
+    {
+      "source": "C16",
+      "target": "C23",
+      "weight": 17.55
+    },
+    {
+      "source": "C16",
+      "target": "C17",
+      "weight": 21.25
+    },
+    {
+      "source": "C16",
+      "target": "C22",
+      "weight": 30.16
+    },
+    {
+      "source": "C17",
+      "target": "C19",
+      "weight": 21.32
+    },
+    {
+      "source": "C18",
+      "target": "C23",
+      "weight": 13.21
+    },
+    {
+      "source": "C18",
+      "target": "C22",
+      "weight": 14.51
+    },
+    {
+      "source": "C20",
+      "target": "C21",
+      "weight": 13.62
+    },
+    {
+      "source": "C21",
+      "target": "C23",
+      "weight": 18.09
+    },
+    {
+      "source": "C21",
+      "target": "C22",
+      "weight": 22.72
+    },
+    {
+      "source": "C22",
+      "target": "C23",
+      "weight": 25.73
+    }
+  ]
+}

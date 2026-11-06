@@ -1,0 +1,11 @@
+parcel_id,destination,weight,priority,deadline,value,customer_name
+P101,C1,5,4,2.0,75,Alice (Tech Corp)
+P102,C2,12,5,1.5,95,Dr. Banner (Hospital)
+P103,C3,8,3,4.0,55,Charlie (Cafe Central)
+P104,C4,15,2,8.0,40,David (Home Decor)
+P105,C5,6,5,1.0,98,Emergency Clinic
+P106,C6,10,4,3.0,70,Frank (Law Chambers)
+P107,C7,4,2,6.0,35,Grace (Book Store)
+P108,C2,7,3,5.0,52,City Labs
+P109,C3,14,1,12.0,25,Hardware Depot
+P110,C5,9,4,2.5,72,Ortho Care

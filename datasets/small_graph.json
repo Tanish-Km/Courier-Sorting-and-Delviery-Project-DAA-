@@ -1,0 +1,168 @@
+{
+  "directed": false,
+  "nodes": [
+    {
+      "node_id": "Depot",
+      "name": "Central Distribution Depot",
+      "x": 50.0,
+      "y": 50.0,
+      "is_depot": true
+    },
+    {
+      "node_id": "C1",
+      "name": "Customer Location 1",
+      "x": 62.55,
+      "y": 7.25,
+      "is_depot": false
+    },
+    {
+      "node_id": "C2",
+      "name": "Customer Location 2",
+      "x": 29.75,
+      "y": 25.09,
+      "is_depot": false
+    },
+    {
+      "node_id": "C3",
+      "name": "Customer Location 3",
+      "x": 71.28,
+      "y": 65.9,
+      "is_depot": false
+    },
+    {
+      "node_id": "C4",
+      "name": "Customer Location 4",
+      "x": 85.3,
+      "y": 12.82,
+      "is_depot": false
+    },
+    {
+      "node_id": "C5",
+      "name": "Customer Location 5",
+      "x": 42.97,
+      "y": 7.68,
+      "is_depot": false
+    },
+    {
+      "node_id": "C6",
+      "name": "Customer Location 6",
+      "x": 24.68,
+      "y": 50.48,
+      "is_depot": false
+    },
+    {
+      "node_id": "C7",
+      "name": "Customer Location 7",
+      "x": 7.39,
+      "y": 22.9,
+      "is_depot": false
+    }
+  ],
+  "edges": [
+    {
+      "source": "Depot",
+      "target": "C6",
+      "weight": 25.32
+    },
+    {
+      "source": "Depot",
+      "target": "C3",
+      "weight": 26.56
+    },
+    {
+      "source": "Depot",
+      "target": "C2",
+      "weight": 32.1
+    },
+    {
+      "source": "Depot",
+      "target": "C5",
+      "weight": 42.9
+    },
+    {
+      "source": "Depot",
+      "target": "C1",
+      "weight": 44.55
+    },
+    {
+      "source": "Depot",
+      "target": "C4",
+      "weight": 51.27
+    },
+    {
+      "source": "Depot",
+      "target": "C7",
+      "weight": 50.5
+    },
+    {
+      "source": "C1",
+      "target": "C5",
+      "weight": 19.58
+    },
+    {
+      "source": "C1",
+      "target": "C4",
+      "weight": 23.42
+    },
+    {
+      "source": "C1",
+      "target": "C2",
+      "weight": 37.34
+    },
+    {
+      "source": "C1",
+      "target": "C7",
+      "weight": 57.34
+    },
+    {
+      "source": "C2",
+      "target": "C5",
+      "weight": 21.86
+    },
+    {
+      "source": "C2",
+      "target": "C7",
+      "weight": 22.47
+    },
+    {
+      "source": "C2",
+      "target": "C6",
+      "weight": 25.89
+    },
+    {
+      "source": "C2",
+      "target": "C3",
+      "weight": 58.23
+    },
+    {
+      "source": "C3",
+      "target": "C6",
+      "weight": 49.08
+    },
+    {
+      "source": "C3",
+      "target": "C4",
+      "weight": 54.9
+    },
+    {
+      "source": "C4",
+      "target": "C5",
+      "weight": 42.64
+    },
+    {
+      "source": "C5",
+      "target": "C7",
+      "weight": 38.7
+    },
+    {
+      "source": "C5",
+      "target": "C6",
+      "weight": 46.54
+    },
+    {
+      "source": "C6",
+      "target": "C7",
+      "weight": 32.55
+    }
+  ]
+}

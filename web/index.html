@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini-Courier Planner | Intelligent Dispatch & Route Optimization</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+  <div id="app" class="app-container">
+
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Mini-Courier Planner</h1>
+          <span class="brand-subtitle">Algorithmic Logistics Engine & Route Optimizer</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <!-- Dataset Selector -->
+        <div class="control-group">
+          <label for="datasetSelect">Dataset:</label>
+          <select id="datasetSelect" class="form-select">
+            <option value="small" selected>Small (8 Nodes, 10 Parcels)</option>
+            <option value="medium">Medium (25 Nodes, 50 Parcels)</option>
+            <option value="large">Large (60 Nodes, 200 Parcels)</option>
+            <option value="custom">Custom Dataset</option>
+          </select>
+        </div>
+
+        <!-- Vehicle Capacity Slider -->
+        <div class="control-group capacity-group">
+          <label for="capacitySlider">Capacity: <span id="capacityDisplay" class="highlight-val">40</span> kg</label>
+          <div class="slider-wrapper">
+            <input type="range" id="capacitySlider" min="5" max="150" value="40" step="1" class="form-range">
+            <input type="number" id="capacityInput" min="1" max="1000" value="40" class="form-number-input">
+          </div>
+        </div>
+
+        <!-- Primary Action -->
+        <button id="runPlannerBtn" class="btn btn-primary" title="Execute Pipeline">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Run Optimization</span>
+        </button>
+
+        <!-- Export Dropdown -->
+        <div class="dropdown">
+          <button id="exportBtn" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export &amp; Import</span>
+          </button>
+          <div id="exportMenu" class="dropdown-menu hidden">
+            <a href="#" id="exportJsonBtn">Download Manifest (JSON)</a>
+            <a href="#" id="exportCsvBtn">Download Manifest (CSV)</a>
+            <a href="#" id="exportItineraryCsvBtn">Download Delivery Itinerary (CSV)</a>
+            <a href="#" id="exportMapSvgBtn">Export Route Map (Vector SVG)</a>
+            <a href="#" id="printReportBtn">Print Dispatch Summary</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="importParcelsNavBtn">📂 Import Parcels (CSV)</a>
+            <a href="#" id="importGraphNavBtn">🗺️ Import Road Graph (JSON)</a>
+          </div>
+        </div>
+
+        <!-- Hidden File Inputs for Custom Imports -->
+        <input type="file" id="importParcelsFileInput" accept=".csv,text/csv" style="display:none">
+        <input type="file" id="importGraphFileInput" accept=".json,application/json" style="display:none">
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn-icon" title="Toggle Light/Dark Theme">
+          <span class="icon-moon">🌙</span>
+          <span class="icon-sun">☀️</span>
+        </button>
+
+        <!-- Status Indicator -->
+        <div class="status-badge" id="apiStatusBadge">
+          <span class="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Algorithmic Control Strip -->
+    <div class="algorithm-strip">
+      <div class="strip-item">
+        <label for="sortStrategySelect">Sorting Strategy:</label>
+        <select id="sortStrategySelect" class="strip-select">
+          <option value="deadline_priority" selected>Deadline &amp; Priority (Earliest First)</option>
+          <option value="priority_only">Priority Urgency Only (5 → 1)</option>
+          <option value="value_density">Value-Density Greedy (Value/Weight)</option>
+        </select>
+      </div>
+
+      <div class="strip-item">
+        <label for="sortAlgoSelect">Sort Algorithm:</label>
+        <select id="sortAlgoSelect" class="strip-select">
+          <option value="mergesort" selected>MergeSort (O(N log N) Stable)</option>
+          <option value="quicksort">QuickSort (Median-of-3)</option>
+          <option value="timsort">Python Timsort (Built-in)</option>
+        </select>
+      </div>
+
+      <div class="strip-item">
+        <label for="depotSelect">Central Depot:</label>
+        <select id="depotSelect" class="strip-select">
+          <option value="Depot" selected>Depot (Center Hub)</option>
+        </select>
+      </div>
+
+      <div class="strip-item checkbox-item">
+        <label class="switch-label">
+          <input type="checkbox" id="useTwoOptToggle" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">2-Opt Local Search (Untangle Crossings)</span>
+        </label>
+      </div>
+
+      <div class="strip-item">
+        <label for="vehicleSpeedInput">Avg Speed:</label>
+        <div class="input-inline">
+          <input type="number" id="vehicleSpeedInput" value="40" min="10" max="120" step="5" class="speed-input">
+          <span>km/h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Summary Cards -->
+    <section class="kpi-banner">
+      <!-- Card 1: Capacity Utilization -->
+      <div class="kpi-card">
+        <div class="kpi-icon icon-capacity">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Vehicle Payload Utilization</span>
+          <div class="kpi-value-row">
+            <span id="kpiWeight" class="kpi-primary">-- / -- kg</span>
+            <span id="kpiUtilizationBadge" class="badge badge-success">--%</span>
+          </div>
+          <div class="progress-bar-container">
+            <div id="kpiProgressBar" class="progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Cumulative Delivery Value -->
+      <div class="kpi-card">
+        <div class="kpi-icon icon-value">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Delivery Value</span>
+          <div class="kpi-value-row">
+            <span id="kpiValue" class="kpi-primary">-- pts</span>
+            <span id="kpiOptimalityBadge" class="badge badge-accent" title="Knapsack DP vs Greedy Heuristic">100% Opt</span>
+          </div>
+          <span id="kpiGreedySubtext" class="kpi-subtext">Greedy baseline: -- pts</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Route Tour Distance -->
+      <div class="kpi-card">
+        <div class="kpi-icon icon-route">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">TSP Route Distance &amp; ETA</span>
+          <div class="kpi-value-row">
+            <span id="kpiDistance" class="kpi-primary">-- km</span>
+            <span id="kpiEtaBadge" class="badge badge-info">-- min</span>
+          </div>
+          <span id="kpiSavingsSubtext" class="kpi-subtext">2-Opt savings: -- km (--%)</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Computational Execution Time -->
+      <div class="kpi-card">
+        <div class="kpi-icon icon-speed">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Execution Latency</span>
+          <div class="kpi-value-row">
+            <span id="kpiRuntime" class="kpi-primary">-- ms</span>
+            <span class="badge badge-neutral">5 Phases</span>
+          </div>
+          <span id="kpiBreakdownSubtext" class="kpi-subtext">DP: -- ms | TSP: -- ms</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="main-tabs">
+      <button class="tab-btn active" data-tab="tab-manifest">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>Dispatch Manifest &amp; Itinerary</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-map">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+          <line x1="8" y1="2" x2="8" y2="18"></line>
+          <line x1="16" y1="6" x2="16" y2="22"></line>
+        </svg>
+        <span>Road Network &amp; Route Map</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-dp">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="3" y1="9" x2="21" y2="9"></line>
+          <line x1="3" y1="15" x2="21" y2="15"></line>
+          <line x1="9" y1="3" x2="9" y2="21"></line>
+          <line x1="15" y1="3" x2="15" y2="21"></line>
+        </svg>
+        <span>DP Knapsack Matrix Inspector</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-parcels">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span>Parcel Manager</span>
+      </button>
+
+      <button class="tab-btn" data-tab="tab-benchmarks">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Algorithm Benchmarks</span>
+      </button>
+    </nav>
+
+    <!-- Tab Content Container -->
+    <main class="tab-content-area">
+
+      <!-- ==================== TAB 1: MANIFEST & ITINERARY ==================== -->
+      <section id="tab-manifest" class="tab-pane active">
+        <div class="manifest-grid">
+          <!-- Left Column: Selected and Rejected Parcels -->
+          <div class="pane-column manifest-tables-col">
+            <!-- Filter Bar -->
+            <div class="table-header-bar">
+              <div class="filter-pills">
+                <button class="pill active" data-filter="all">All Parcels (<span id="allCount">0</span>)</button>
+                <button class="pill" data-filter="selected">Loaded in Vehicle (<span id="selectedCount">0</span>)</button>
+                <button class="pill" data-filter="rejected">Deferred / Left Behind (<span id="rejectedCount">0</span>)</button>
+              </div>
+              <div class="search-box">
+                <input type="text" id="manifestSearchInput" placeholder="Filter by ID, Customer, Destination...">
+              </div>
+            </div>
+
+            <!-- Parcels Table -->
+            <div class="table-wrapper">
+              <table class="data-table" id="parcelsManifestTable">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>ID</th>
+                    <th>Destination</th>
+                    <th>Weight</th>
+                    <th>Priority</th>
+                    <th>Deadline</th>
+                    <th>Value</th>
+                    <th>Customer Name</th>
+                    <th>Decision Note</th>
+                  </tr>
+                </thead>
+                <tbody id="parcelsTableBody">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right Column: Turn-by-Turn Delivery Itinerary -->
+          <div class="pane-column itinerary-col">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="10" r="3"></circle>
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+                </svg>
+                Turn-by-Turn Delivery Itinerary
+              </h3>
+              <span id="itineraryStopCount" class="badge badge-info">0 Stops</span>
+            </div>
+
+            <div class="itinerary-timeline-wrapper">
+              <div class="timeline" id="itineraryTimeline">
+                <!-- Dynamic timeline steps -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: ROUTE MAP & GRAPH ==================== -->
+      <section id="tab-map" class="tab-pane">
+        <div class="map-layout">
+          <!-- Canvas Container -->
+          <div class="map-canvas-container">
+            <canvas id="routeCanvas"></canvas>
+
+            <!-- Map Floating Controls -->
+            <div class="map-floating-controls">
+              <button id="zoomInBtn" class="map-btn" title="Zoom In">+</button>
+              <button id="zoomOutBtn" class="map-btn" title="Zoom Out">−</button>
+              <button id="resetViewBtn" class="map-btn" title="Reset View & Center">⤢</button>
+              <div class="map-btn-divider"></div>
+              <button id="toggleLabelsBtn" class="map-btn active" title="Toggle Distance Labels">🏷️</button>
+              <button id="exportSvgMapBtn" class="map-btn" title="Export Route Map as Vector SVG">📐</button>
+            </div>
+
+            <!-- Animated Courier Simulation Controls -->
+            <div class="simulation-bar">
+              <div class="sim-controls">
+                <button id="simPlayPauseBtn" class="btn btn-sm btn-primary">
+                  <span id="simPlayIcon">▶</span>
+                  <span id="simPlayText">Simulate Route</span>
+                </button>
+                <button id="simResetBtn" class="btn btn-sm btn-secondary">Reset Van</button>
+              </div>
+
+              <div class="sim-speed-control">
+                <span>Speed:</span>
+                <button class="sim-speed-btn active" data-speed="1">1x</button>
+                <button class="sim-speed-btn" data-speed="2.5">2.5x</button>
+                <button class="sim-speed-btn" data-speed="5">5x</button>
+              </div>
+
+              <div class="sim-stats">
+                <span>Stop: <strong id="simCurrentStop">Depot</strong></span>
+                <span>Traveled: <strong id="simDistanceTraveled">0.0 km</strong></span>
+              </div>
+            </div>
+
+            <!-- Legend Overlay -->
+            <div class="map-legend">
+              <div class="legend-item"><span class="legend-dot depot"></span> Central Depot</div>
+              <div class="legend-item"><span class="legend-dot delivered"></span> Active Delivery Stop</div>
+              <div class="legend-item"><span class="legend-dot unvisited"></span> Network Junction</div>
+              <div class="legend-item"><span class="legend-line route"></span> Optimized TSP Route</div>
+              <div class="legend-item"><span class="legend-line road"></span> Road Link</div>
+            </div>
+          </div>
+
+          <!-- Map Sidebar: Selected Node / Segment Details -->
+          <div class="map-sidebar">
+            <div class="card-header">
+              <h3>Node &amp; Segment Inspector</h3>
+            </div>
+            <div id="nodeDetailsCard" class="node-details-card">
+              <p class="empty-state-text">Click or hover over any node in the map to inspect location coordinates, connected road segments, and parcels destined for it.</p>
+            </div>
+
+            <div class="route-summary-panel">
+              <h4>Active Route Sequence</h4>
+              <div id="routeStopList" class="route-stop-tags">
+                <!-- Dynamic sequence tags -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: DP KNAPSACK MATRIX ==================== -->
+      <section id="tab-dp" class="tab-pane">
+        <div class="dp-view-container">
+          <!-- Toolbar -->
+          <div class="dp-toolbar">
+            <div class="dp-title-info">
+              <h3>0/1 Knapsack Dynamic Programming Table ($DP[i][w]$)</h3>
+              <p>Rows represent parcel candidates $i = 0 \dots n$; Columns represent vehicle capacity subproblems $w = 0 \dots W$.</p>
+            </div>
+
+            <div class="dp-legend-actions">
+              <div class="dp-legend-item"><span class="dp-color-box cell-optimal"></span> Backtracking Path (Optimal Subset)</div>
+              <div class="dp-legend-item"><span class="dp-color-box cell-regular"></span> Subproblem State</div>
+              <div class="dp-window-selector" id="dpWindowSelector">
+                <!-- Dynamically generated capacity window selector buttons -->
+              </div>
+              <button id="jumpBacktrackStartBtn" class="btn btn-sm btn-secondary">Jump to Optimal $DP[n][W]$</button>
+              <button id="jumpOriginBtn" class="btn btn-sm btn-secondary">Jump to Base $DP[0][0]$</button>
+            </div>
+          </div>
+
+          <!-- Split layout: DP Table on left, Cell Formula Inspector on right -->
+          <div class="dp-split-layout">
+            <div class="dp-table-scroll-wrapper" id="dpTableScrollWrapper">
+              <table class="dp-grid-table" id="dpGridTable">
+                <!-- Dynamically generated DP matrix -->
+              </table>
+            </div>
+
+            <!-- Dynamic Decision Inspector Card -->
+            <div class="dp-inspector-sidebar">
+              <div class="card-header">
+                <h4>Cell Recurrence Inspector</h4>
+              </div>
+              <div id="dpCellInspectorContent" class="dp-inspector-content">
+                <p class="hint-text">Hover or click any cell in the DP grid to dissect the optimal substructure decision.</p>
+              </div>
+
+              <!-- Backtracking Step Timeline -->
+              <div class="backtrack-summary-card">
+                <h4>Backtracking Trace Log</h4>
+                <div id="backtrackStepList" class="backtrack-step-list">
+                  <!-- Steps injected here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 4: PARCEL MANAGER ==================== -->
+      <section id="tab-parcels" class="tab-pane">
+        <div class="parcels-manager-layout">
+          <!-- Add / Edit Parcel Form -->
+          <div class="card parcel-form-card">
+            <div class="card-header">
+              <h3>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Custom Parcel
+              </h3>
+            </div>
+            <form id="addParcelForm" class="parcel-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="formParcelId">Parcel ID:</label>
+                  <input type="text" id="formParcelId" required placeholder="e.g. P111">
+                </div>
+                <div class="form-group">
+                  <label for="formDestination">Destination Node:</label>
+                  <select id="formDestination" required>
+                    <!-- Dynamically populated from graph nodes -->
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="formWeight">Weight (kg):</label>
+                  <input type="number" id="formWeight" min="1" max="100" value="8" required>
+                </div>
+                <div class="form-group">
+                  <label for="formPriority">Priority Tier (1 - 5):</label>
+                  <select id="formPriority">
+                    <option value="1">1 - Standard Low Urgency</option>
+                    <option value="2">2 - Regular</option>
+                    <option value="3" selected>3 - Priority Medium</option>
+                    <option value="4">4 - High Urgency</option>
+                    <option value="5">5 - Critical Emergency</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="formDeadline">Deadline (hours):</label>
+                  <input type="number" id="formDeadline" min="0.5" max="48" step="0.5" value="4.0" required>
+                </div>
+                <div class="form-group">
+                  <label for="formValue">Custom Value (0 for Auto):</label>
+                  <input type="number" id="formValue" min="0" max="1000" value="0">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="formCustomerName">Recipient / Business Name:</label>
+                <input type="text" id="formCustomerName" placeholder="e.g. Dr. Banner (Hospital)">
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Parcel to Pool</button>
+                <button type="button" id="generateRandomParcelsBtn" class="btn btn-secondary">🎲 Generate 5 Random Parcels</button>
+                <button type="button" id="importParcelsBtn" class="btn btn-secondary">📂 Import Parcels CSV</button>
+                <button type="button" id="importGraphBtn" class="btn btn-secondary">🗺️ Import Graph JSON</button>
+                <button type="button" id="resetParcelsToDefaultBtn" class="btn btn-outline">Reset to Dataset Defaults</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Active Parcel Pool Table -->
+          <div class="card parcel-pool-card">
+            <div class="card-header">
+              <h3>Active Parcel Pool (<span id="poolCountBadge">0</span> parcels)</h3>
+              <button id="clearAllParcelsBtn" class="btn btn-sm btn-danger">Clear All</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table" id="parcelPoolTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>ID</th>
+                    <th>Destination</th>
+                    <th>Weight</th>
+                    <th>Priority</th>
+                    <th>Deadline</th>
+                    <th>Value</th>
+                    <th>Customer</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="parcelPoolBody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 5: BENCHMARKS & COMPLEXITY ==================== -->
+      <section id="tab-benchmarks" class="tab-pane">
+        <div class="benchmarks-grid">
+          <!-- Comparison Card 1: 0/1 Knapsack DP vs Greedy -->
+          <div class="card benchmark-card">
+            <div class="card-header">
+              <h4>0/1 Knapsack: Dynamic Programming vs Greedy</h4>
+              <span class="badge badge-accent">Phase 2B Evaluation</span>
+            </div>
+            <div class="benchmark-body">
+              <p>Theoretical Analysis: While Greedy by value-density runs in $O(N \log N)$, it fails to guarantee optimality on 0/1 Knapsack. Dynamic Programming provides the strictly optimal subset in pseudo-polynomial $O(N \cdot W)$ time.</p>
+              <div class="metric-comparison-row">
+                <div class="metric-box">
+                  <span class="metric-title">DP Optimal Value</span>
+                  <span class="metric-val text-success" id="benchDpValue">--</span>
+                  <span class="metric-sub" id="benchDpWeight">Weight: -- kg</span>
+                </div>
+                <div class="metric-vs">VS</div>
+                <div class="metric-box">
+                  <span class="metric-title">Greedy Heuristic Value</span>
+                  <span class="metric-val text-warning" id="benchGreedyValue">--</span>
+                  <span class="metric-sub" id="benchGreedyWeight">Weight: -- kg</span>
+                </div>
+              </div>
+              <div class="optimality-callout">
+                <span class="callout-label">DP Optimality Advantage:</span>
+                <strong id="benchOptimalityGap" class="callout-val">+0.0%</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Card 2: TSP 2-Opt vs Nearest-Neighbor -->
+          <div class="card benchmark-card">
+            <div class="card-header">
+              <h4>TSP Route Optimization: Nearest-Neighbor vs 2-Opt</h4>
+              <span class="badge badge-info">Phase 3B Evaluation</span>
+            </div>
+            <div class="benchmark-body">
+              <p>Theoretical Analysis: Greedy Nearest-Neighbor generates an initial $O(\log K)$-approximate tour. 2-Opt systematically uncrosses intersecting edges via pairwise subtour reversals until reaching a 2-optimal local minimum.</p>
+              <div class="metric-comparison-row">
+                <div class="metric-box">
+                  <span class="metric-title">Pure Nearest-Neighbor</span>
+                  <span class="metric-val text-muted" id="benchRawDistance">-- km</span>
+                </div>
+                <div class="metric-vs">→</div>
+                <div class="metric-box">
+                  <span class="metric-title">2-Opt Local Search</span>
+                  <span class="metric-val text-success" id="benchOptDistance">-- km</span>
+                </div>
+              </div>
+              <div class="optimality-callout">
+                <span class="callout-label">Road Distance Saved:</span>
+                <strong id="benchDistanceSaved" class="callout-val">0.0 km (0.0% reduction)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Card 3: Sorting Benchmarks -->
+          <div class="card benchmark-card">
+            <div class="card-header">
+              <h4>Sorting Complexity &amp; Stability: MergeSort vs QuickSort</h4>
+              <span class="badge badge-success">Phase 2A Evaluation</span>
+            </div>
+            <div class="benchmark-body">
+              <p>MergeSort guarantees $O(N \log N)$ worst-case time and strict order stability, ensuring delivery fairness. QuickSort provides fast in-place partitioning with median-of-three.</p>
+              <div class="sorting-benchmark-results" id="sortingBenchmarkResults">
+                <button id="runSortingBenchmarkBtn" class="btn btn-sm btn-primary">Run Live Sorting Trial (10x)</button>
+                <div id="sortingResultsDisplay" class="sorting-results-display">
+                  <!-- Dynamic sorting stats -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Algorithmic Complexity Cheat Sheet -->
+          <div class="card benchmark-card full-width-card">
+            <div class="card-header">
+              <h4>Mini-Courier Planner Algorithmic Complexity Reference</h4>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table complexity-table">
+                <thead>
+                  <tr>
+                    <th>Pipeline Phase</th>
+                    <th>Algorithm</th>
+                    <th>Time Complexity</th>
+                    <th>Space Complexity</th>
+                    <th>Design Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Phase 1: Graph Representation</strong></td>
+                    <td>Adjacency List with Cartesian Coordinates</td>
+                    <td>$O(V + E)$</td>
+                    <td>$O(V + E)$</td>
+                    <td>Spatially aware road network topology modeling</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Phase 2A: Package Prioritization</strong></td>
+                    <td>MergeSort / QuickSort</td>
+                    <td>$O(N \log N)$</td>
+                    <td>$O(N)$ (Merge) / $O(\log N)$ (Quick)</td>
+                    <td>Multi-criteria sorting on (Deadline $\uparrow$, Priority $\downarrow$, Weight $\uparrow$)</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Phase 2B: Vehicle Box Filling</strong></td>
+                    <td>0/1 Knapsack Dynamic Programming</td>
+                    <td>$O(N \cdot W)$ pseudo-polynomial</td>
+                    <td>$O(N \cdot W)$ table / $O(W)$ space-opt</td>
+                    <td>Globally optimal payload selection maximizing value within capacity $W$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Phase 3A: Shortest Path Metric</strong></td>
+                    <td>Dijkstra with Min-Heap Priority Queue</td>
+                    <td>$O(|K| \cdot (V + E) \log V)$</td>
+                    <td>$O(V)$</td>
+                    <td>All-pairs shortest paths &amp; road turn reconstruction</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Phase 3B: Route Maker</strong></td>
+                    <td>Nearest-Neighbor + 2-Opt Local Search</td>
+                    <td>$O(K^2) + O(\text{iter} \cdot K^2)$</td>
+                    <td>$O(K)$</td>
+                    <td>Closed-loop courier tour minimizing kilometers &amp; crossing paths</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global Toast Notification Banner -->
+    <div id="toastNotification" class="toast-notification hidden" role="alert">
+      <div class="toast-content">
+        <span id="toastIcon" class="toast-icon">ℹ️</span>
+        <span id="toastMessage" class="toast-message">Notification message</span>
+      </div>
+      <button id="toastCloseBtn" class="toast-close" title="Dismiss">&times;</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>Mini-Courier Planner Capstone Project &bull; B. Tech CSE / DSA Pipeline</span>
+      </div>
+      <div class="footer-right">
+        <span>Backend: Python 3 &bull; Frontend: Modern Vanilla ES6 &amp; Canvas &bull; All 5 Phases Fully Integrated</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Custom Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
